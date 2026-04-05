@@ -1,0 +1,2 @@
+����� injecting env (6) from .env // tip: ��� multiple files { path: ['.env.local', '.env'] }
+Slots inserted

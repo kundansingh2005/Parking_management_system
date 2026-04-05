@@ -1,0 +1,53 @@
+��node : file:///C:/Users/si
+ngh/OneDrive/Desktop/mini%
+20project/frontend/fix_css
+.js:1
+At line:1 char:1
++ node fix_css.js > 
+error.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (f  
+  ile:///C:/User...nd/f   
+ ix_css.js:1:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+const fs = require('fs');
+           ^
+
+ReferenceError: require 
+is not defined in ES 
+module scope, you can use 
+import instead
+This file is being 
+treated as an ES module 
+because it has a '.js' 
+file extension and 'C:\Use
+rs\singh\OneDrive\Desktop\
+mini project\frontend\pack
+age.json' contains 
+"type": "module". To 
+treat it as a CommonJS 
+script, rename it to use 
+the '.cjs' file extension.
+    at file:///C:/Users/si
+ngh/OneDrive/Desktop/mini%
+20project/frontend/fix_css
+.js:1:12
+    at ModuleJob.run (node
+:internal/modules/esm/modu
+le_job:271:25)
+    at async onImport.trac
+ePromise.__proto__ (node:i
+nternal/modules/esm/loader
+:578:26)
+    at async asyncRunEntry
+PointWithESMLoader (node:i
+nternal/modules/run_main:1
+16:5)
+
+Node.js v22.14.0
