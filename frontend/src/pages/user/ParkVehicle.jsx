@@ -118,15 +118,81 @@ const ParkVehicle = () => {
               </select>
             </div>
 
-            {selectedLocation && (
+            {selectedLocation && slots.length > 0 && (
               <div className="input-group">
                 <label>Select Available Slot</label>
-                <select required value={selectedSlot} onChange={(e) => setSelectedSlot(e.target.value)}>
-                  <option value="">-- Choose Slot --</option>
-                  {slots.map(s => (
-                    <option key={s.id} value={s.id}>{s.slot_number} ({s.type})</option>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', 
+                  gap: '10px',
+                  maxHeight: '300px',
+                  overflowY: 'auto',
+                  padding: '10px',
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '8px'
+                }}>
+                  {slots.map(slot => (
+                    <div
+                      key={slot.id}
+                      onClick={() => setSelectedSlot(slot.id)}
+                      style={{
+                        padding: '15px 10px',
+                        background: selectedSlot === slot.id ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
+                        border: selectedSlot === slot.id ? '2px solid var(--primary)' : '2px solid transparent',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        transition: 'all 0.3s ease',
+                        position: 'relative'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (selectedSlot !== slot.id) {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedSlot !== slot.id) {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                        }
+                      }}
+                    >
+                      <div style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '5px' }}>
+                        {slot.slot_number}
+                      </div>
+                      <div style={{ 
+                        fontSize: '11px', 
+                        color: 'var(--text-muted)',
+                        textTransform: 'uppercase'
+                      }}>
+                        {slot.type}
+                      </div>
+                      <div style={{ 
+                        fontSize: '10px', 
+                        marginTop: '5px',
+                        padding: '2px 6px',
+                        background: 'rgba(74, 222, 128, 0.2)',
+                        color: '#4ade80',
+                        borderRadius: '4px',
+                        display: 'inline-block'
+                      }}>
+                        Available
+                      </div>
+                    </div>
                   ))}
-                </select>
+                </div>
+              </div>
+            )}
+
+            {selectedLocation && slots.length === 0 && (
+              <div style={{ 
+                padding: '20px', 
+                textAlign: 'center', 
+                color: 'var(--text-muted)',
+                background: 'rgba(255,255,255,0.05)',
+                borderRadius: '8px',
+                marginBottom: '15px'
+              }}>
+                No available slots at this location
               </div>
             )}
             
