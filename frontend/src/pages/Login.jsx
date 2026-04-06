@@ -15,19 +15,25 @@ const Login = () => {
     const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
     
     if (isDemoMode) {
-      // Demo mode - create fake user and login
+      // Demo mode - check if email contains "admin" to determine role
+      const isAdmin = email.toLowerCase().includes('admin');
       const demoUser = {
-        id: 1,
+        id: isAdmin ? 999 : 1,
         name: email.split('@')[0],
         email: email,
-        role: 'user'
+        role: isAdmin ? 'admin' : 'user'
       };
       const demoToken = 'demo_token_' + Date.now();
       
       localStorage.setItem('token', demoToken);
       localStorage.setItem('user', JSON.stringify(demoUser));
       
-      navigate('/user/dashboard');
+      // Navigate based on role
+      if (isAdmin) {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/user/dashboard');
+      }
       window.location.reload();
     } else {
       // Production mode - call real API
