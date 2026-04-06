@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, CheckCircle, Download } from 'lucide-react';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const ParkVehicle = () => {
   const [locations, setLocations] = useState([]);
@@ -18,6 +19,28 @@ const ParkVehicle = () => {
 
   // Check if demo mode is enabled
   const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
+  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+
+  // Map configuration
+  const mapContainerStyle = {
+    width: '100%',
+    height: '100%',
+    borderRadius: '8px'
+  };
+
+  const defaultCenter = {
+    lat: 28.6139, // Delhi coordinates
+    lng: 77.2090
+  };
+
+  const [mapCenter, setMapCenter] = useState(defaultCenter);
+
+  // Location coordinates for demo locations
+  const locationCoordinates = {
+    1: { lat: 28.6139, lng: 77.2090, name: 'Central Mall Underground' },
+    2: { lat: 28.5355, lng: 77.3910, name: 'City Plaza Parking' },
+    3: { lat: 28.5562, lng: 77.1000, name: 'Airport Terminal 1' }
+  };
 
   useEffect(() => {
     if (isDemoMode) {
@@ -37,6 +60,12 @@ const ParkVehicle = () => {
 
   useEffect(() => {
     if (selectedLocation) {
+      // Update map center when location is selected
+      const coords = locationCoordinates[selectedLocation];
+      if (coords) {
+        setMapCenter({ lat: coords.lat, lng: coords.lng });
+      }
+
       if (isDemoMode) {
         // Demo mode - use mock slots
         const demoSlots = [];
@@ -146,11 +175,48 @@ const ParkVehicle = () => {
       </h2>
       
       <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap' }}>
-        {/* Simple map placeholder */}
+        {/* Google Maps */}
         <div className="glass-panel" style={{ flex: '1 1 400px', minHeight: '300px', display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ marginBottom: '15px' }}>Location Map</h3>
-          <div style={{ flex: 1, background: '#2a2e37', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-            <p>[ Google Maps Integration Placeholder ]</p>
+          <div style={{ flex: 1, borderRadius: '8px', overflow: 'hidden' }}>
+            {googleMapsApiKey ? (
+              <LoadScript googleMapsApiKey={googleMapsApiKey}>
+                <GoogleMap
+                  mapContainerStyle={mapContainerStyle}
+                  center={mapCenter}
+                  zoom={13}
+                >
+                  {selectedLocation && locationCoordinates[selectedLocation] && (
+                    <Marker 
+                      position={{ 
+                        lat: locationCoordinates[selectedLocation].lat, 
+                        lng: locationCoordinates[selectedLocation].lng 
+                      }}
+                      title={locationCoordinates[selectedLocation].name}
+                    />
+                  )}
+                </GoogleMap>
+              </LoadScript>
+            ) : (
+              <div style={{ 
+                width: '100%', 
+                height: '100%', 
+                background: '#2a2e37', 
+                borderRadius: '8px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                color: 'var(--text-muted)',
+                flexDirection: 'column',
+                gap: '10px',
+                padding: '20px',
+                textAlign: 'center'
+              }}>
+                <MapPin size={40} color="var(--primary)" />
+                <p>Google Maps API key not configured</p>
+                <p style={{ fontSize: '12px' }}>Add VITE_GOOGLE_MAPS_API_KEY to environment variables</p>
+              </div>
+            )}
           </div>
         </div>
 
