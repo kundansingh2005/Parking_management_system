@@ -17,9 +17,25 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // MVP Demo mode - always succeed
-    alert('Registration successful! You can now login.');
-    navigate('/login');
+    const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
+    
+    if (isDemoMode) {
+      // Demo mode - always succeed
+      alert('Registration successful! You can now login.');
+      navigate('/login');
+    } else {
+      // Production mode - call real API
+      try {
+        await axios.post('/auth/register', { 
+           name, email, password, role, 
+           location: role === 'admin' ? location : undefined,
+           total_slots: role === 'admin' ? totalSlots : undefined
+        });
+        navigate('/login');
+      } catch (err) {
+        setError(err.response?.data?.message || 'Registration failed');
+      }
+    }
   };
 
   return (

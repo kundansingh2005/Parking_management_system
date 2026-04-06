@@ -12,21 +12,33 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // MVP Demo mode - create fake user and login
-    const demoUser = {
-      id: 1,
-      name: email.split('@')[0],
-      email: email,
-      role: 'user'
-    };
-    const demoToken = 'demo_token_' + Date.now();
+    const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
     
-    localStorage.setItem('token', demoToken);
-    localStorage.setItem('user', JSON.stringify(demoUser));
-    
-    // Manually set auth context
-    navigate('/user/dashboard');
-    window.location.reload(); // Force reload to update auth context
+    if (isDemoMode) {
+      // Demo mode - create fake user and login
+      const demoUser = {
+        id: 1,
+        name: email.split('@')[0],
+        email: email,
+        role: 'user'
+      };
+      const demoToken = 'demo_token_' + Date.now();
+      
+      localStorage.setItem('token', demoToken);
+      localStorage.setItem('user', JSON.stringify(demoUser));
+      
+      navigate('/user/dashboard');
+      window.location.reload();
+    } else {
+      // Production mode - call real API
+      try {
+        const user = await login(email, password);
+        if (user.role === 'admin') navigate('/admin/dashboard');
+        else navigate('/user/dashboard');
+      } catch (err) {
+        setError(err.response?.data?.message || 'Login failed');
+      }
+    }
   };
 
   return (
