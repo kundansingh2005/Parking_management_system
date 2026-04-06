@@ -8,22 +8,41 @@ const UserDashboard = () => {
   const [stats, setStats] = useState({ active: 0, total: 0 });
   const [recentBookings, setRecentBookings] = useState([]);
   const { user } = useContext(AuthContext);
+  const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
 
   useEffect(() => {
     fetchBookings();
   }, []);
 
   const fetchBookings = async () => {
-    try {
-      const res = await axios.get('/user/bookings');
-      const bookings = res.data;
-      setRecentBookings(bookings.slice(0, 5));
-      setStats({
-        active: bookings.filter(b => b.status === 'active').length,
-        total: bookings.length
-      });
-    } catch (err) {
-      console.error(err);
+    if (isDemoMode) {
+      // Demo mode - load from localStorage
+      const savedBookings = localStorage.getItem('demo_bookings');
+      if (savedBookings) {
+        const bookings = JSON.parse(savedBookings);
+        setRecentBookings(bookings.slice(0, 5));
+        setStats({
+          active: bookings.filter(b => b.status === 'active').length,
+          total: bookings.length
+        });
+      } else {
+        // Show sample data if no bookings yet
+        setStats({ active: 0, total: 0 });
+        setRecentBookings([]);
+      }
+    } else {
+      // Production mode - fetch from API
+      try {
+        const res = await axios.get('/user/bookings');
+        const bookings = res.data;
+        setRecentBookings(bookings.slice(0, 5));
+        setStats({
+          active: bookings.filter(b => b.status === 'active').length,
+          total: bookings.length
+        });
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
