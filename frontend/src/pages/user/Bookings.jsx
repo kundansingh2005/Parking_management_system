@@ -4,27 +4,72 @@ import { History, CreditCard } from 'lucide-react';
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
+  const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
 
   useEffect(() => {
     fetchBookings();
   }, []);
 
   const fetchBookings = async () => {
-    try {
-      const res = await axios.get('/user/bookings');
-      setBookings(res.data);
-    } catch (err) {
-      console.error(err);
+    if (isDemoMode) {
+      // Demo mode - load from localStorage
+      const savedBookings = localStorage.getItem('demo_bookings');
+      if (savedBookings) {
+        setBookings(JSON.parse(savedBookings));
+      } else {
+        // Show sample bookings for demo
+        setBookings([
+          {
+            id: 1001,
+            slot_number: 'P-5',
+            vehicle_number: 'DL-01-AB-1234',
+            type: 'car',
+            start_time: new Date().toISOString(),
+            status: 'active',
+            amount: 150,
+            payment_status: 'completed'
+          },
+          {
+            id: 1002,
+            slot_number: 'P-8',
+            vehicle_number: 'DL-02-CD-5678',
+            type: 'car',
+            start_time: new Date(Date.now() - 86400000).toISOString(),
+            status: 'completed',
+            amount: 100,
+            payment_status: 'completed'
+          }
+        ]);
+      }
+    } else {
+      // Production mode - fetch from API
+      try {
+        const res = await axios.get('/user/bookings');
+        setBookings(res.data);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
   const handlePayment = async (bookingId) => {
-    try {
-      await axios.post('/user/pay', { booking_id: bookingId });
+    if (isDemoMode) {
+      // Demo mode - update localStorage
+      const updatedBookings = bookings.map(b => 
+        b.id === bookingId ? { ...b, payment_status: 'completed' } : b
+      );
+      setBookings(updatedBookings);
+      localStorage.setItem('demo_bookings', JSON.stringify(updatedBookings));
       alert('Payment Simulated Successfully');
-      fetchBookings();
-    } catch (err) {
-      alert('Payment Failed');
+    } else {
+      // Production mode - call API
+      try {
+        await axios.post('/user/pay', { booking_id: bookingId });
+        alert('Payment Simulated Successfully');
+        fetchBookings();
+      } catch (err) {
+        alert('Payment Failed');
+      }
     }
   };
 

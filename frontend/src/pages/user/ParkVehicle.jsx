@@ -94,19 +94,35 @@ const ParkVehicle = () => {
     e.preventDefault();
     
     if (isDemoMode) {
-      // Demo mode - always show success
+      // Demo mode - save to localStorage
       const selectedSlotData = slots.find(s => s.id === parseInt(selectedSlot));
       const locationData = locations.find(l => l.admin_id === parseInt(selectedLocation));
       
+      const newBooking = {
+        id: Date.now(),
+        slot_number: selectedSlotData?.slot_number || 'N/A',
+        vehicle_number: vehicleNumber,
+        type: selectedSlotData?.type || 'car',
+        start_time: new Date().toISOString(),
+        status: 'active',
+        amount: duration * 50,
+        payment_status: 'pending'
+      };
+
+      // Save to localStorage
+      const existingBookings = JSON.parse(localStorage.getItem('demo_bookings') || '[]');
+      existingBookings.unshift(newBooking);
+      localStorage.setItem('demo_bookings', JSON.stringify(existingBookings));
+
       setReceiptData({
-        id: Math.floor(Math.random() * 10000),
+        id: newBooking.id,
         locationName: locationData?.location || 'N/A',
         vehicle: vehicleNumber,
         duration: duration,
         slotNumber: selectedSlotData?.slot_number || 'N/A'
       });
       setSuccess(true);
-      setQrData(`booking_${Date.now()}`);
+      setQrData(`booking_${newBooking.id}`);
       setFee(duration * 50);
     } else {
       // Production mode - call real API
