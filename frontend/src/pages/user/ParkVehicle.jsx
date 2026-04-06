@@ -17,105 +17,49 @@ const ParkVehicle = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch locations
-    axios.get('/user/locations')
-      .then(res => {
-        if (res.data && res.data.length > 0) {
-          setLocations(res.data);
-        } else {
-          // Demo data for presentation
-          setLocations([
-            { admin_id: 1, location: 'Central Mall Underground', company_name: 'Central Parking' },
-            { admin_id: 2, location: 'City Plaza Parking', company_name: 'City Parking Services' },
-            { admin_id: 3, location: 'Airport Terminal 1', company_name: 'Airport Parking' }
-          ]);
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        // Demo data for presentation
-        setLocations([
-          { admin_id: 1, location: 'Central Mall Underground', company_name: 'Central Parking' },
-          { admin_id: 2, location: 'City Plaza Parking', company_name: 'City Parking Services' },
-          { admin_id: 3, location: 'Airport Terminal 1', company_name: 'Airport Parking' }
-        ]);
-      });
+    // Always use demo data for MVP
+    setLocations([
+      { admin_id: 1, location: 'Central Mall Underground', company_name: 'Central Parking' },
+      { admin_id: 2, location: 'City Plaza Parking', company_name: 'City Parking Services' },
+      { admin_id: 3, location: 'Airport Terminal 1', company_name: 'Airport Parking' }
+    ]);
   }, []);
 
   useEffect(() => {
-    // Fetch slots when location is selected
+    // Always use demo slots for MVP
     if (selectedLocation) {
-      axios.get(`/user/slots?admin_id=${selectedLocation}`)
-        .then(res => {
-          if (res.data && res.data.length > 0) {
-            setSlots(res.data);
-          } else {
-            // Demo slots for presentation
-            const demoSlots = [];
-            for (let i = 1; i <= 12; i++) {
-              demoSlots.push({
-                id: i,
-                slot_number: `P-${i}`,
-                type: i % 3 === 0 ? 'bike' : 'car',
-                status: 'available'
-              });
-            }
-            setSlots(demoSlots);
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          // Demo slots for presentation
-          const demoSlots = [];
-          for (let i = 1; i <= 12; i++) {
-            demoSlots.push({
-              id: i,
-              slot_number: `P-${i}`,
-              type: i % 3 === 0 ? 'bike' : 'car',
-              status: 'available'
-            });
-          }
-          setSlots(demoSlots);
+      const demoSlots = [];
+      for (let i = 1; i <= 12; i++) {
+        demoSlots.push({
+          id: i,
+          slot_number: `P-${i}`,
+          type: i % 3 === 0 ? 'bike' : 'car',
+          status: 'available'
         });
+      }
+      setSlots(demoSlots);
     } else {
       setSlots([]);
     }
-    setSelectedSlot(''); // Reset selected slot when location changes
+    setSelectedSlot('');
   }, [selectedLocation]);
 
   const handleBook = async (e) => {
     e.preventDefault();
-    try {
-      const res = await axios.post('/user/book', { slot_id: selectedSlot, duration_hours: duration, vehicle_number: vehicleNumber });
-      const selectedSlotData = slots.find(s => s.id === parseInt(selectedSlot));
-      const locationData = locations.find(l => l.admin_id === parseInt(selectedLocation));
-      
-      setReceiptData({
-        id: res.data.bookingId,
-        locationName: locationData?.location || 'N/A',
-        vehicle: vehicleNumber,
-        duration: duration,
-        slotNumber: selectedSlotData?.slot_number || 'N/A'
-      });
-      setSuccess(true);
-      setQrData(`booking_${res.data.bookingId}`);
-      setFee(res.data.amount);
-    } catch (err) {
-      // Demo mode - show success even if API fails
-      const selectedSlotData = slots.find(s => s.id === parseInt(selectedSlot));
-      const locationData = locations.find(l => l.admin_id === parseInt(selectedLocation));
-      
-      setReceiptData({
-        id: Math.floor(Math.random() * 10000),
-        locationName: locationData?.location || 'N/A',
-        vehicle: vehicleNumber,
-        duration: duration,
-        slotNumber: selectedSlotData?.slot_number || 'N/A'
-      });
-      setSuccess(true);
-      setQrData(`booking_${Date.now()}`);
-      setFee(duration * 50);
-    }
+    // MVP Demo mode - always show success
+    const selectedSlotData = slots.find(s => s.id === parseInt(selectedSlot));
+    const locationData = locations.find(l => l.admin_id === parseInt(selectedLocation));
+    
+    setReceiptData({
+      id: Math.floor(Math.random() * 10000),
+      locationName: locationData?.location || 'N/A',
+      vehicle: vehicleNumber,
+      duration: duration,
+      slotNumber: selectedSlotData?.slot_number || 'N/A'
+    });
+    setSuccess(true);
+    setQrData(`booking_${Date.now()}`);
+    setFee(duration * 50);
   };
 
   if (success) {
