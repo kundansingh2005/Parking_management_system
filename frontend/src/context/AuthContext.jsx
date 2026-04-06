@@ -11,14 +11,27 @@ export const AuthProvider = ({ children }) => {
   // Set default axios header
   axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+  // Check if demo mode is enabled
+  const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
+
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      fetchUser();
+      if (isDemoMode) {
+        // Demo mode - load user from localStorage
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        }
+        setLoading(false);
+      } else {
+        // Production mode - fetch from API
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        fetchUser();
+      }
     } else {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, isDemoMode]);
 
   const fetchUser = async () => {
     try {
