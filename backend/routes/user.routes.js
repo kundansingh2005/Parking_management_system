@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAvailableSlots, bookSlot, getMyBookings, payFee } = require('../controllers/user.controller');
+const { getAvailableSlots, bookSlot, getMyBookings, payFee, getLocations } = require('../controllers/user.controller');
 const { verifyToken } = require('../middleware/authMiddleware');
 
 const router = express.Router();
