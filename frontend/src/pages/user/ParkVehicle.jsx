@@ -125,65 +125,67 @@ const ParkVehicle = () => {
 
             {selectedLocation && slots.length > 0 && (
               <div className="input-group">
-                <label>Select Available Slot</label>
+                <label>Available Parking Slots</label>
                 <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', 
-                  gap: '10px',
-                  maxHeight: '300px',
-                  overflowY: 'auto',
-                  padding: '10px',
+                  overflowX: 'auto',
                   background: 'rgba(255,255,255,0.05)',
-                  borderRadius: '8px'
+                  borderRadius: '8px',
+                  padding: '10px'
                 }}>
-                  {slots.map(slot => (
-                    <div
-                      key={slot.id}
-                      onClick={() => setSelectedSlot(slot.id)}
-                      style={{
-                        padding: '15px 10px',
-                        background: selectedSlot === slot.id ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
-                        border: selectedSlot === slot.id ? '2px solid var(--primary)' : '2px solid transparent',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        textAlign: 'center',
-                        transition: 'all 0.3s ease',
-                        position: 'relative'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (selectedSlot !== slot.id) {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (selectedSlot !== slot.id) {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                        }
-                      }}
-                    >
-                      <div style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '5px' }}>
-                        {slot.slot_number}
-                      </div>
-                      <div style={{ 
-                        fontSize: '11px', 
-                        color: 'var(--text-muted)',
-                        textTransform: 'uppercase'
-                      }}>
-                        {slot.type}
-                      </div>
-                      <div style={{ 
-                        fontSize: '10px', 
-                        marginTop: '5px',
-                        padding: '2px 6px',
-                        background: 'rgba(74, 222, 128, 0.2)',
-                        color: '#4ade80',
-                        borderRadius: '4px',
-                        display: 'inline-block'
-                      }}>
-                        Available
-                      </div>
-                    </div>
-                  ))}
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        <th style={{ padding: '10px', textAlign: 'left', color: 'var(--text-muted)', fontSize: '12px' }}>SLOT NO</th>
+                        <th style={{ padding: '10px', textAlign: 'left', color: 'var(--text-muted)', fontSize: '12px' }}>TYPE</th>
+                        <th style={{ padding: '10px', textAlign: 'left', color: 'var(--text-muted)', fontSize: '12px' }}>STATUS</th>
+                        <th style={{ padding: '10px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>ACTION</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {slots.map(slot => (
+                        <tr 
+                          key={slot.id}
+                          style={{ 
+                            borderBottom: '1px solid rgba(255,255,255,0.05)',
+                            background: selectedSlot === slot.id ? 'rgba(74, 222, 128, 0.1)' : 'transparent'
+                          }}
+                        >
+                          <td style={{ padding: '12px', color: 'var(--text-main)' }}>{slot.slot_number}</td>
+                          <td style={{ padding: '12px', color: 'var(--text-main)', textTransform: 'capitalize' }}>{slot.type}</td>
+                          <td style={{ padding: '12px' }}>
+                            <span style={{
+                              padding: '4px 12px',
+                              background: 'rgba(74, 222, 128, 0.2)',
+                              color: '#4ade80',
+                              borderRadius: '12px',
+                              fontSize: '12px',
+                              textTransform: 'uppercase'
+                            }}>
+                              Available
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px', textAlign: 'center' }}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedSlot(slot.id)}
+                              style={{
+                                padding: '6px 16px',
+                                background: selectedSlot === slot.id ? 'var(--primary)' : 'rgba(74, 222, 128, 0.2)',
+                                color: selectedSlot === slot.id ? '#fff' : '#4ade80',
+                                border: 'none',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                              }}
+                            >
+                              {selectedSlot === slot.id ? 'Selected' : 'Select'}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
