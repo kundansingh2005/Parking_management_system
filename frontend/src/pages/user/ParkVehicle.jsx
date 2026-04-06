@@ -13,18 +13,42 @@ const ParkVehicle = () => {
   const [success, setSuccess] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
   const [fee, setFee] = useState(0);
+  const [qrData, setQrData] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('/user/slots')
-      .then(res => setSlots(res.data))
+    // Fetch locations
+    axios.get('/user/locations')
+      .then(res => setLocations(res.data))
       .catch(err => console.error(err));
   }, []);
+
+  useEffect(() => {
+    // Fetch slots when location is selected
+    if (selectedLocation) {
+      axios.get(`/user/slots?admin_id=${selectedLocation}`)
+        .then(res => setSlots(res.data))
+        .catch(err => console.error(err));
+    } else {
+      setSlots([]);
+    }
+    setSelectedSlot(''); // Reset selected slot when location changes
+  }, [selectedLocation]);
 
   const handleBook = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post('/user/book', { slot_id: selectedSlot, duration_hours: duration, vehicle_number: vehicleNumber });
+      const selectedSlotData = slots.find(s => s.id === parseInt(selectedSlot));
+      const locationData = locations.find(l => l.admin_id === parseInt(selectedLocation));
+      
+      setReceiptData({
+        id: res.data.bookingId,
+        locationName: locationData?.location || 'N/A',
+        vehicle: vehicleNumber,
+        duration: duration,
+        slotNumber: selectedSlotData?.slot_number || 'N/A'
+      });
       setSuccess(true);
       setQrData(`booking_${res.data.bookingId}`);
       setFee(res.data.amount);
